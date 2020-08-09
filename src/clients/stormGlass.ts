@@ -62,7 +62,7 @@ export class StormGlass {
     'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed';
   readonly stormGlassAPISource = 'noaa';
 
-  constructor(request: HTTPUtil.Request) {
+  constructor(request: HTTPUtil.Request = new HTTPUtil.Request()) {
     this.request = request;
   }
 

@@ -1,0 +1,51 @@
+import { StormGlass, ForecastPoint } from '@src/clients/stormGlass';
+
+export enum BeachPosition {
+  S = 'S',
+  E = 'E',
+  W = 'W',
+  N = 'N',
+}
+
+export interface Beach {
+  name: string;
+  position: BeachPosition;
+  lat: number;
+  lng: number;
+  user: string;
+}
+
+// eslint-disable-next-line prettier/prettier
+export interface BeachForecast extends Omit<Beach, 'user'>, ForecastPoint { }
+
+export class Forecast {
+  protected stormGlass: StormGlass;
+
+  constructor(stormGlass = new StormGlass()) {
+    this.stormGlass = stormGlass;
+  }
+
+  public async processForecastForBeaches(
+    beaches: Beach[]
+  ): Promise<BeachForecast[]> {
+    const pointsWithCorrectSources: BeachForecast[] = [];
+
+    for (const beach of beaches) {
+      const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
+      const enrichedBeachData = points.map((e) => ({
+        ...{
+          lat: beach.lat,
+          lng: beach.lng,
+          name: beach.name,
+          position: beach.position,
+          rating: 1,
+        },
+        ...e,
+      }));
+
+      pointsWithCorrectSources.push(...enrichedBeachData);
+    }
+
+    return pointsWithCorrectSources;
+  }
+}
