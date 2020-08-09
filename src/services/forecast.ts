@@ -15,6 +15,11 @@ export interface Beach {
   user: string;
 }
 
+export interface TimeForecast {
+  time: string;
+  forecast: BeachForecast[];
+}
+
 // eslint-disable-next-line prettier/prettier
 export interface BeachForecast extends Omit<Beach, 'user'>, ForecastPoint { }
 
@@ -27,7 +32,7 @@ export class Forecast {
 
   public async processForecastForBeaches(
     beaches: Beach[]
-  ): Promise<BeachForecast[]> {
+  ): Promise<TimeForecast[]> {
     const pointsWithCorrectSources: BeachForecast[] = [];
 
     for (const beach of beaches) {
@@ -46,6 +51,25 @@ export class Forecast {
       pointsWithCorrectSources.push(...enrichedBeachData);
     }
 
-    return pointsWithCorrectSources;
+    return this.mapForecastByTime(pointsWithCorrectSources);
+  }
+
+  private mapForecastByTime(forecast: BeachForecast[]): TimeForecast[] {
+    const forecastByTime: TimeForecast[] = [];
+
+    for (const point of forecast) {
+      const timePoint = forecastByTime.find((f) => f.time === point.time);
+
+      if (timePoint) {
+        timePoint.forecast.push(point);
+      } else {
+        forecastByTime.push({
+          time: point.time,
+          forecast: [point],
+        });
+      }
+    }
+
+    return forecastByTime;
   }
 }
