@@ -1,27 +1,13 @@
 import { StormGlass, ForecastPoint } from '@src/clients/stormGlass';
 import { InternalError } from '@src/util/errors/internal-error';
-
-export enum BeachPosition {
-  S = 'S',
-  E = 'E',
-  W = 'W',
-  N = 'N',
-}
-
-export interface Beach {
-  name: string;
-  position: BeachPosition;
-  lat: number;
-  lng: number;
-}
+import { Beach } from '@src/models/beach';
 
 export interface TimeForecast {
   time: string;
   forecast: BeachForecast[];
 }
 
-// eslint-disable-next-line prettier/prettier
-export interface BeachForecast extends Omit<Beach, 'user'>, ForecastPoint { }
+export interface BeachForecast extends Omit<Beach, 'user'>, ForecastPoint {}
 
 export class ForecastProcessingInternalError extends InternalError {
   constructor(message: string) {
