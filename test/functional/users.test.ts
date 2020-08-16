@@ -27,6 +27,7 @@ describe('User funcional tests', () => {
 
       expect(response.status).toBe(422);
       expect(response.body).toEqual({
+        code: 422,
         error: 'User validation failed: name: Path `name` is required.',
       });
     });
