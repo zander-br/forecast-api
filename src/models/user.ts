@@ -1,4 +1,5 @@
 import mongoose, { Document, Model } from 'mongoose';
+import bcrypt from 'bcrypt';
 
 export interface User {
   _id?: string;
@@ -42,5 +43,32 @@ schema.path('email').validate(
   'already exists in the database.',
   CUSTOM_VALIDATION.DUPLICATED
 );
+
+export async function hashPassword(
+  password: string,
+  salt = 10
+): Promise<string> {
+  return await bcrypt.hash(password, salt);
+}
+
+export async function comparePasswords(
+  password: string,
+  hashedPassword: string
+): Promise<boolean> {
+  return await bcrypt.compare(password, hashedPassword);
+}
+
+schema.pre<UserModel>('save', async function (): Promise<void> {
+  if (!this.password || !this.isModified('password')) {
+    return;
+  }
+
+  try {
+    const hashedPassword = await hashPassword(this.password);
+    this.password = hashedPassword;
+  } catch (error) {
+    console.error(`Error hashing the password for the user ${this.name}`);
+  }
+});
 
 export const User: Model<UserModel> = mongoose.model('User', schema);
