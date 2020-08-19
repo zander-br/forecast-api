@@ -23,7 +23,6 @@ export default class AuthService {
     return await bcrypt.compare(password, hashedPassword);
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
   public static generateToken(payload: object): string {
     return jwt.sign(payload, config.get('App.auth.key'), {
       expiresIn: config.get('App.auth.tokenExpiresIn'),
